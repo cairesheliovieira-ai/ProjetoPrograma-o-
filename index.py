@@ -77,4 +77,4 @@ while True:
         print("Saindo do sistema... Até logo!")
         break
     else:
-        print("🚫 Opção inválida! Tente novamente.")
+        print("Opção inválida! Tente novamente.")
