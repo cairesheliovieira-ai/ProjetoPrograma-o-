@@ -1,80 +1,108 @@
-estoque = {}
+import sqlite3
+
+import sqlite3, os
+
+DB = "estoque.db"
+
+# ---------------- BANCO ---------------- #
+
+def init_db():
+    con = sqlite3.connect(DB)
+    con.execute("""
+        CREATE TABLE IF NOT EXISTS estoque (
+            codigo TEXT PRIMARY KEY,
+            nome_item TEXT NOT NULL,
+            quantidade REAL NOT NULL,
+            preco_unitario REAL NOT NULL,
+            preco_total REAL NOT NULL
+        )
+    """)
+    con.commit(); con.close()
+    print("Banco pronto!\n")
+
+def con(): return sqlite3.connect(DB)
+
+# ---------------- FUNÇÕES ---------------- #
 
 def adicionar(id, nome, qtd, preco):
-    if id in estoque:
-        print("Erro: Esse ID já existe!")
-    else:
-        estoque[id] = {
-            "nome": nome,
-            "quantidade": qtd,
-            "preco": preco
-        }
-        print(f"{nome} adicionado com sucesso!")
+    if qtd < 0 or preco < 0:
+        return print("Erro: Valores negativos não permitidos!")
+    try:
+        c = con()
+        c.execute("INSERT INTO estoque VALUES (?,?,?,?,?)",
+                  (str(id), nome, qtd, preco, qtd * preco))
+        c.commit(); c.close()
+        print(f"Produto '{nome}' adicionado!")
+    except sqlite3.IntegrityError:
+        print("Erro: ID já existe!")
+
 
 def listar():
-    if not estoque:
-        print("\n O estoque está vazio.")
-    else:
-        print("\n--- ESTOQUE ATUAL ---")
-        for id, dados in estoque.items():
-            print(f"ID: {id} | Nome: {dados[0]} | Qtd: {dados[1]} | R$: {dados[2]:.2f}")
-        print("------------------------\n")
+    c = con()
+    rows = c.execute("SELECT codigo, nome_item, quantidade, preco_unitario FROM estoque ORDER BY codigo").fetchall()
+    c.close()
+    if not rows:
+        return print("\nEstoque vazio.\n")
+    print("\n======= ESTOQUE =======")
+    for cod, nome, qtd, preco in rows:
+        print(f"ID: {cod} | Nome: {nome} | Qtd: {qtd} | Preço: R$ {preco:.2f}")
+    print("========================\n")
+
 
 def atualizar(id, nova_qtd):
-    if id in estoque:
-        estoque[id][1] = nova_qtd  # O índice 1 é onde guardamos a quantidade
-        print(f"Quantidade do ID {id} atualizada para {nova_qtd}.")
-    else:
-        print("Erro: Produto não encontrado!")
+    if nova_qtd < 0:
+        return print("Erro: Quantidade inválida!")
+    c = con()
+    row = c.execute("SELECT preco_unitario FROM estoque WHERE codigo=?", (str(id),)).fetchone()
+    if not row:
+        c.close(); return print("Erro: Produto não encontrado!")
+    c.execute("UPDATE estoque SET quantidade=?, preco_total=? WHERE codigo=?",
+              (nova_qtd, nova_qtd * row[0], str(id)))
+    c.commit(); c.close()
+    print("Quantidade atualizada!")
+
 
 def remover(id):
-    if id in estoque:
-        item = estoque.pop(id)
-        print(f"Produto '{item[0]}' removido com sucesso!")
-    else:
-        print("Erro: Produto não encontrado!")
+    c = con()
+    row = c.execute("SELECT nome_item FROM estoque WHERE codigo=?", (str(id),)).fetchone()
+    if not row:
+        c.close(); return print("Erro: Produto não encontrado!")
+    c.execute("DELETE FROM estoque WHERE codigo=?", (str(id),))
+    c.commit(); c.close()
+    print(f"Produto '{row[0]}' removido!")
 
-# --- MENU INTERATIVO ---
+
+# ---------------- MENU ---------------- #
+
+init_db()
+
 while True:
-    print("\n--- MENU DE GERENCIAMENTO ---")
-    print("1. Adicionar Produto")
-    print("2. Listar Estoque")
-    print("3. Atualizar Quantidade")
-    print("4. Remover Produto")
-    print("5. Sair")
+    print("======= MENU =======\n1 - Adicionar\n2 - Listar\n3 - Atualizar Quantidade\n4 - Remover\n5 - Sair\n====================")
+    op = input("Opção: ")
 
-    opcao = input("Escolha uma opção: ")
-
-    if opcao == "1":
+    if op == "1":
         try:
-            id_prod = int(input("Digite o ID (número): "))
-            nome_prod = input("Digite o nome do produto: ")
-            qtd_prod = int(input("Digite a quantidade: "))
-            preco_prod = float(input("Digite o preço: "))
-            adicionar(id_prod, nome_prod, qtd_prod, preco_prod)
+            adicionar(int(input("ID: ")), input("Nome: "), int(input("Quantidade: ")), float(input("Preço: ")))
         except ValueError:
-            print("Erro: Use apenas números para ID, Qtd e Preço!")
+            print("Erro: Valores inválidos!")
 
-    elif opcao == "2":
+    elif op == "2":
         listar()
 
-    elif opcao == "3":
+    elif op == "3":
         try:
-            id_prod = int(input("Digite o ID do produto que deseja atualizar: "))
-            nova_qtd = int(input("Digite a nova quantidade total: "))
-            atualizar(id_prod, nova_qtd)
+            atualizar(int(input("ID: ")), int(input("Nova quantidade: ")))
         except ValueError:
-            print("Erro: Digite números válidos!")
+            print("Erro: Valores inválidos!")
 
-    elif opcao == "4":
+    elif op == "4":
         try:
-            id_prod = int(input("Digite o ID do produto que deseja remover: "))
-            remover(id_prod)
+            remover(int(input("ID: ")))
         except ValueError:
-            print("Erro: Digite um ID numérico válido!")
+            print("Erro: ID inválido!")
 
-    elif opcao == "5":
-        print("Saindo do sistema... Até logo!")
-        break
+    elif op == "5":
+        print("Sistema encerrado."); break
+
     else:
-        print("Opção inválida! Tente novamente.")
+        print("Opção inválida!")
