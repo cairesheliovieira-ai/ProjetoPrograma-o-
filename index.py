@@ -157,7 +157,7 @@ def remover(id):
     print(f"\nProduto '{row[0]}' removido com sucesso!\n")
 
 
-# ---------------- MENU ---------------- #
+# ---------------- MENU ----------------
 
 init_db()
 
@@ -233,7 +233,7 @@ while True:
         print("\nSistema encerrado.")
         break
 
-    # -------- OPÇÃO INVÁLIDA -------- #
+    # -------- OPÇÃO INVÁLIDA -------- 
 
     else:
 
