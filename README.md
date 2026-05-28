@@ -7,7 +7,7 @@ O projeto une um ecossistema nativo de persistência em banco de dados relaciona
 
 ---
 
-## 📱 Arquitetura e Engenharia do Projeto
+##  Arquitetura e Engenharia do Projeto
 
 A aplicação foi estruturada seguindo o modelo desacoplado de uma **API RESTful**, garantindo que o processamento de dados (servidor) e a renderização visual (cliente) operem de forma independente através de requisições assíncronas (`fetch`).
 
@@ -15,14 +15,14 @@ A aplicação foi estruturada seguindo o modelo desacoplado de uma **API RESTful
 * **Banco de Dados:** **SQLite3** para a persistência de dados relacional estável, utilizando transações ACID seguros para controle de estoque e histórico.
 * **Frontend (Interface):** Construído de forma puramente nativa com **HTML5**, **CSS3** e **JavaScript Assíncrono (ES6+)**, eliminando a necessidade de frameworks pesados no lado do cliente.
 
-### 🎨 Princípios de Design UI/UX
+###  Princípios de Design UI/UX
 A interface visual foi concebida sob os pilares do **design minimalista e de alta legibilidade**, priorizando:
 * **Baixa Carga Cognitiva:** Organização espacial baseada na **Lei de Miller**, estruturando as informações em blocos (chunks) lógicos de até 7 elementos para evitar a fadiga visual do usuário.
 * **Alta Contraste (Dark Mode):** Paleta de cores escura e profunda com tipografia monoespaçada (`DM Mono` e `Syne`), reduzindo o cansaço ocular e focando estritamente nos dados operacionais.
 
 ---
 
-## 🚀 Funcionalidades Principais
+##  Funcionalidades Principais
 
 1.  **Dashboard de Métricas (KPIs):** Indicadores automatizados exibindo o Valor Total do Estoque, Quantidade de Itens Cadastrados, Volume de Movimentações e Alertas Críticos.
 2.  **Gerenciamento do Inventário (CRUD Completo):** Inclusão, consulta, atualização e exclusão de insumos e mercadorias com cálculo automatizado de custo total.
@@ -31,7 +31,7 @@ A interface visual foi concebida sob os pilares do **design minimalista e de alt
 
 ---
 
-## 📂 Estrutura de Diretórios
+##  Estrutura de Diretórios
 
 Para o correto funcionamento do mecanismo de renderização do Flask, o projeto deve seguir rigorosamente a árvore estrutural abaixo:
 
